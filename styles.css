@@ -314,7 +314,7 @@ p {
 /* About Section */
 .about {
     padding: 5rem 0;
-    background: #f8f9fa;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
 .about-content {
@@ -327,6 +327,31 @@ p {
 .about-text h2 {
     text-align: left;
     margin-bottom: 2rem;
+}
+
+.about-text p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    color: #4a5568;
+}
+
+.about-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.about-photo {
+    width: 100%;
+    height: 400px;
+    object-fit: contain;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    background: #f8fafc;
+    transition: height 0.3s ease;
+    min-height: 300px;
+    max-height: 600px;
 }
 
 .about-features {
