@@ -524,6 +524,13 @@ p {
     cursor: pointer;
 }
 
+.form-help {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
 /* Form Section Headers */
 .form-section {
     margin-bottom: 2rem;
