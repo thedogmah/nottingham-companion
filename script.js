@@ -401,10 +401,212 @@ function updateServiceTypeOptions() {
     });
 }
 
-// Initialize pricing and form updates
+// Image Carousel Functionality
+let currentImageIndex = 0;
+let imageCarousel = null;
+let carouselInterval = null;
+const carouselDelay = 5000; // 5 seconds
+
+// Initialize image carousel
+function initImageCarousel() {
+    imageCarousel = document.getElementById('imageCarousel');
+    if (!imageCarousel) return;
+    
+    // Load images from the images folder
+    loadCarouselImages();
+    
+    // Start auto-rotation
+    startCarouselAutoRotation();
+}
+
+// Load images from the images folder
+async function loadCarouselImages() {
+    try {
+        // Fetch images from the API
+        const response = await fetch('/api/images');
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to load images');
+        }
+        
+        if (data.images.length === 0) {
+            showCarouselFallback();
+            return;
+        }
+        
+        // Create carousel images
+        data.images.forEach((image, index) => {
+            const img = document.createElement('img');
+            img.src = image.src;
+            img.alt = image.name || `Professional photo ${index + 1}`;
+            img.className = 'carousel-image';
+            img.style.zIndex = index === 0 ? '1' : '0';
+            
+            if (index === 0) {
+                img.classList.add('active');
+            }
+            
+            imageCarousel.appendChild(img);
+        });
+        
+        // Create indicators
+        createCarouselIndicators(data.images.length);
+        
+        // Set initial state
+        currentImageIndex = 0;
+        updateCarouselDisplay();
+        
+        console.log(`✅ Loaded ${data.images.length} images for carousel`);
+        
+    } catch (error) {
+        console.error('Error loading carousel images:', error);
+        showCarouselFallback();
+    }
+}
+
+// Show fallback message when no images are available
+function showCarouselFallback() {
+    imageCarousel.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 2rem; text-align: center;">
+            <div>
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📸</div>
+                <h3 style="color: #2c3e50; margin-bottom: 1rem;">Add Your Photos</h3>
+                <p style="color: #64748b; line-height: 1.6;">
+                    Upload professional photos to the <strong>/images</strong> folder<br>
+                    to showcase your services and personality
+                </p>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f1f5f9; border-radius: 8px; font-size: 0.9rem;">
+                    <strong>Recommended:</strong> Professional headshots, Nottingham landmarks,<br>
+                    service-related photos (1200x800px, under 2MB)
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Create carousel indicators
+function createCarouselIndicators(count) {
+    const indicatorsContainer = document.getElementById('carouselIndicators');
+    if (!indicatorsContainer) return;
+    
+    indicatorsContainer.innerHTML = '';
+    
+    for (let i = 0; i < count; i++) {
+        const indicator = document.createElement('div');
+        indicator.className = 'indicator';
+        if (i === 0) indicator.classList.add('active');
+        
+        indicator.addEventListener('click', () => {
+            goToImage(i);
+        });
+        
+        indicatorsContainer.appendChild(indicator);
+    }
+}
+
+// Update carousel display
+function updateCarouselDisplay() {
+    const images = imageCarousel.querySelectorAll('.carousel-image');
+    const indicators = document.querySelectorAll('.indicator');
+    
+    if (images.length === 0) return;
+    
+    // Update images
+    images.forEach((img, index) => {
+        img.classList.remove('active');
+        img.style.zIndex = '0';
+    });
+    
+    images[currentImageIndex].classList.add('active');
+    images[currentImageIndex].style.zIndex = '1';
+    
+    // Update indicators
+    indicators.forEach((indicator, index) => {
+        indicator.classList.remove('active');
+    });
+    
+    if (indicators[currentImageIndex]) {
+        indicators[currentImageIndex].classList.add('active');
+    }
+}
+
+// Go to specific image
+function goToImage(index) {
+    const images = imageCarousel.querySelectorAll('.carousel-image');
+    if (index < 0 || index >= images.length) return;
+    
+    currentImageIndex = index;
+    updateCarouselDisplay();
+    
+    // Reset auto-rotation timer
+    resetCarouselTimer();
+}
+
+// Next image
+function nextImage() {
+    const images = imageCarousel.querySelectorAll('.carousel-image');
+    if (images.length === 0) return;
+    
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    updateCarouselDisplay();
+    resetCarouselTimer();
+}
+
+// Previous image
+function previousImage() {
+    const images = imageCarousel.querySelectorAll('.carousel-image');
+    if (images.length === 0) return;
+    
+    currentImageIndex = currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
+    updateCarouselDisplay();
+    resetCarouselTimer();
+}
+
+// Start auto-rotation
+function startCarouselAutoRotation() {
+    if (carouselInterval) clearInterval(carouselInterval);
+    
+    carouselInterval = setInterval(() => {
+        nextImage();
+    }, carouselDelay);
+}
+
+// Reset carousel timer
+function resetCarouselTimer() {
+    if (carouselInterval) {
+        clearInterval(carouselInterval);
+        startCarouselAutoRotation();
+    }
+}
+
+// Pause auto-rotation on hover
+function pauseCarousel() {
+    if (carouselInterval) {
+        clearInterval(carouselInterval);
+        carouselInterval = null;
+    }
+}
+
+// Resume auto-rotation when mouse leaves
+function resumeCarousel() {
+    if (!carouselInterval) {
+        startCarouselAutoRotation();
+    }
+}
+
+// Initialize carousel when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     loadPricing();
     updateServiceTypeOptions();
+    initImageCarousel();
+    
+    // Add hover events to pause/resume carousel
+    const carousel = document.getElementById('imageCarousel');
+    if (carousel) {
+        carousel.addEventListener('mouseenter', pauseCarousel);
+        carousel.addEventListener('mouseleave', resumeCarousel);
+    }
     
     // Listen for pricing changes from admin panel
     window.addEventListener('storage', function(e) {

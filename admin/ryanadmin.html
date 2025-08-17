@@ -209,6 +209,14 @@
                 <p>Loading inquiries...</p>
             </div>
         </div>
+        
+        <div class="admin-section">
+            <h3>🖼️ Image Management</h3>
+            <button class="refresh-btn" onclick="loadImages()">🔄 Refresh Images</button>
+            <div id="imagesContainer">
+                <p>Loading images...</p>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -263,6 +271,59 @@
                 document.getElementById('inquiriesContainer').innerHTML = 
                     '<p>❌ Network error loading inquiries</p>';
             }
+        }
+        
+        // Load images from API
+        async function loadImages() {
+            try {
+                const response = await fetch('/api/images');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayImages(data.images);
+                } else {
+                    document.getElementById('imagesContainer').innerHTML = 
+                        '<p>❌ Error loading images: ' + data.error + '</p>';
+                }
+            } catch (error) {
+                document.getElementById('imagesContainer').innerHTML = 
+                    '<p>❌ Network error loading images</p>';
+            }
+        }
+        
+        // Display images in admin panel
+        function displayImages(images) {
+            if (!images || images.length === 0) {
+                document.getElementById('imagesContainer').innerHTML = 
+                    '<p>No images found in the /images folder.</p>';
+                return;
+            }
+            
+            const imagesList = `
+                <div style="margin-bottom: 1rem;">
+                    <strong>Total Images:</strong> ${images.length} | 
+                    <strong>Carousel Status:</strong> <span style="color: #10b981;">✅ Active</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                    ${images.map(image => `
+                        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; background: #f8fafc;">
+                            <div style="text-align: center; margin-bottom: 0.5rem;">
+                                <img src="${image.src}" alt="${image.name}" style="max-width: 100%; height: 100px; object-fit: cover; border-radius: 4px;">
+                            </div>
+                            <div style="font-size: 0.875rem;">
+                                <strong>${image.name}</strong><br>
+                                <span style="color: #64748b;">${image.type} • ${image.filename}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+                    <strong>💡 Tip:</strong> Upload new images to the <code>/images</code> folder and click "Refresh Images" to see them here. 
+                    Images will automatically appear in the carousel on your main website.
+                </div>
+            `;
+            
+            document.getElementById('imagesContainer').innerHTML = imagesList;
         }
         
         // Display inquiries in table
@@ -323,6 +384,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadPricing();
             loadInquiries();
+            loadImages();
         });
     </script>
 </body>

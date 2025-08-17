@@ -19,6 +19,7 @@ connectToDatabase()
 // API Routes
 app.use('/api/contact', require('./api/contact'));
 app.use('/api/admin/inquiries', require('./api/admin/inquiries'));
+app.use('/api/images', require('./api/images'));
 
 // Serve static files from the root directory
 app.use(express.static(__dirname));
@@ -33,4 +34,5 @@ app.listen(PORT, () => {
   console.log(`🌐 Visit: http://localhost:${PORT}`);
   console.log(`📊 MongoDB: Connected to visa-app database`);
   console.log(`🔧 Admin Panel: http://localhost:${PORT}/admin/ryanadmin.html`);
+  console.log(`📸 Images API: http://localhost:${PORT}/api/images`);
 });
