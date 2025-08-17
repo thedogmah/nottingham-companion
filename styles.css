@@ -719,11 +719,12 @@ html {
 .image-carousel {
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 400px; /* Default height, will be adjusted dynamically */
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 8px 30px rgba(0,0,0,0.15);
     background: #f8fafc;
+    transition: height 0.3s ease; /* Smooth height transitions */
 }
 
 .carousel-image {
@@ -770,6 +771,7 @@ html {
     justify-content: space-between;
     padding: 0 1rem;
     pointer-events: none;
+    z-index: 10;
 }
 
 .carousel-btn {
@@ -845,10 +847,58 @@ html {
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
+/* Bottom Slideshow Styles */
+.gallery {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+}
+
+.bottom-slideshow {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    background: #f8fafc;
+    margin: 3rem 0;
+}
+
+.bottom-slideshow-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.bottom-slideshow-image.active {
+    opacity: 1;
+}
+
+.gallery-info {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.gallery-info p {
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+}
+
 /* Responsive carousel */
 @media (max-width: 768px) {
     .image-carousel {
         height: 300px;
+        min-height: 250px;
     }
     
     .carousel-btn {
@@ -868,5 +918,9 @@ html {
     .indicator {
         width: 10px;
         height: 10px;
+    }
+    
+    .bottom-slideshow {
+        height: 250px;
     }
 }

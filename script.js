@@ -435,13 +435,25 @@ async function loadCarouselImages() {
             return;
         }
         
+        // Sort images to start with 0.png, then 1.png, 2.png, etc.
+        const sortedImages = data.images.sort((a, b) => {
+            const aNum = parseInt(a.name) || 999;
+            const bNum = parseInt(b.name) || 999;
+            return aNum - bNum;
+        });
+        
         // Create carousel images
-        data.images.forEach((image, index) => {
+        sortedImages.forEach((image, index) => {
             const img = document.createElement('img');
             img.src = image.src;
             img.alt = image.name || `Professional photo ${index + 1}`;
             img.className = 'carousel-image';
             img.style.zIndex = index === 0 ? '1' : '0';
+            
+            // Load image to get dimensions and adjust carousel height
+            img.onload = function() {
+                adjustCarouselHeight(this);
+            };
             
             if (index === 0) {
                 img.classList.add('active');
@@ -451,17 +463,51 @@ async function loadCarouselImages() {
         });
         
         // Create indicators
-        createCarouselIndicators(data.images.length);
+        createCarouselIndicators(sortedImages.length);
         
         // Set initial state
         currentImageIndex = 0;
         updateCarouselDisplay();
         
-        console.log(`✅ Loaded ${data.images.length} images for carousel`);
+        console.log(`✅ Loaded ${sortedImages.length} images for carousel, starting with ${sortedImages[0]?.name || 'unknown'}`);
         
     } catch (error) {
         console.error('Error loading carousel images:', error);
         showCarouselFallback();
+    }
+}
+
+// Adjust carousel height based on image dimensions
+function adjustCarouselHeight(img) {
+    if (!imageCarousel) return;
+    
+    const imgAspectRatio = img.naturalWidth / img.naturalHeight;
+    const carouselWidth = imageCarousel.offsetWidth;
+    const newHeight = carouselWidth / imgAspectRatio;
+    
+    // Set minimum and maximum heights
+    const minHeight = 300;
+    const maxHeight = 600;
+    const finalHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
+    
+    imageCarousel.style.height = `${finalHeight}px`;
+    
+    // Update carousel controls position
+    updateCarouselControlsPosition();
+}
+
+// Update carousel controls position after height change
+function updateCarouselControlsPosition() {
+    const controls = document.querySelector('.carousel-controls');
+    const indicators = document.querySelector('.carousel-indicators');
+    
+    if (controls) {
+        controls.style.top = '50%';
+    }
+    
+    if (indicators) {
+        const carouselHeight = imageCarousel.offsetHeight;
+        indicators.style.bottom = '20px';
     }
 }
 
@@ -595,11 +641,99 @@ function resumeCarousel() {
     }
 }
 
+// Initialize bottom slideshow
+function initBottomSlideshow() {
+    const bottomSlideshow = document.getElementById('bottomSlideshow');
+    if (!bottomSlideshow) return;
+    
+    loadBottomSlideshowImages();
+}
+
+// Load images for bottom slideshow (reverse order)
+async function loadBottomSlideshowImages() {
+    try {
+        const response = await fetch('/api/images');
+        const data = await response.json();
+        
+        if (!response.ok || data.images.length === 0) return;
+        
+        // Sort images in reverse order (last image first)
+        const reverseSortedImages = data.images.sort((a, b) => {
+            const aNum = parseInt(a.name) || 999;
+            const bNum = parseInt(b.name) || 999;
+            return bNum - aNum; // Reverse order
+        });
+        
+        const slideshowContainer = document.getElementById('bottomSlideshow');
+        if (!slideshowContainer) return;
+        
+        // Create slideshow images
+        reverseSortedImages.forEach((image, index) => {
+            const img = document.createElement('img');
+            img.src = image.src;
+            img.alt = image.name || `Photo ${index + 1}`;
+            img.className = 'bottom-slideshow-image';
+            img.style.zIndex = index === 0 ? '1' : '0';
+            
+            if (index === 0) {
+                img.classList.add('active');
+            }
+            
+            slideshowContainer.appendChild(img);
+        });
+        
+        // Start bottom slideshow auto-rotation
+        startBottomSlideshow();
+        
+    } catch (error) {
+        console.error('Error loading bottom slideshow images:', error);
+    }
+}
+
+// Bottom slideshow variables
+let bottomSlideshowInterval = null;
+let currentBottomImageIndex = 0;
+const bottomSlideshowDelay = 4000; // 4 seconds
+
+// Start bottom slideshow
+function startBottomSlideshow() {
+    if (bottomSlideshowInterval) clearInterval(bottomSlideshowInterval);
+    
+    bottomSlideshowInterval = setInterval(() => {
+        nextBottomImage();
+    }, bottomSlideshowDelay);
+}
+
+// Next bottom image
+function nextBottomImage() {
+    const images = document.querySelectorAll('.bottom-slideshow-image');
+    if (images.length === 0) return;
+    
+    currentBottomImageIndex = (currentBottomImageIndex + 1) % images.length;
+    updateBottomSlideshow();
+}
+
+// Update bottom slideshow display
+function updateBottomSlideshow() {
+    const images = document.querySelectorAll('.bottom-slideshow-image');
+    
+    images.forEach((img, index) => {
+        img.classList.remove('active');
+        img.style.zIndex = '0';
+    });
+    
+    if (images[currentBottomImageIndex]) {
+        images[currentBottomImageIndex].classList.add('active');
+        images[currentBottomImageIndex].style.zIndex = '1';
+    }
+}
+
 // Initialize carousel when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     loadPricing();
     updateServiceTypeOptions();
     initImageCarousel();
+    initBottomSlideshow();
     
     // Add hover events to pause/resume carousel
     const carousel = document.getElementById('imageCarousel');
