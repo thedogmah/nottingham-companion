@@ -64,8 +64,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const result = await response.json();
                 
                 if (response.ok) {
-                    // Success
-                    showNotification(result.message, 'success');
+                    // Success - show popup message
+                    alert('Thank you! We got your message and will reply soon. We\'ll be in touch!');
                     contactForm.reset();
                     
                     // Track successful submission (for analytics)
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 } else {
                     // Error from server
-                    showNotification(result.error || 'Failed to send message. Please try again.', 'error');
+                    alert('Error sending message: ' + (result.error || 'Failed to send message. Please try again.'));
                 }
                 
             } catch (error) {
