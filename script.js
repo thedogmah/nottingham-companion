@@ -360,7 +360,6 @@ function loadPricing() {
         hourlyRate: '£35',
         halfDayRate: '£120',
         fullDayRate: '£200',
-        overnightRate: '£250',
         weeklyRate: '£1000',
         travelFee: '£0.50'
     };
