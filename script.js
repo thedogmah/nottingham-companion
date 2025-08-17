@@ -645,15 +645,20 @@ function resumeCarousel() {
 
 // Initialize bottom slideshow
 function initBottomSlideshow() {
+    console.log('🔧 Initializing bottom slideshow...');
     const bottomSlideshow = document.getElementById('bottomSlideshow');
-    if (!bottomSlideshow) return;
-    
+    if (!bottomSlideshow) {
+        console.error('❌ Bottom slideshow container not found!');
+        return;
+    }
+    console.log('✅ Found bottom slideshow container');
     loadBottomSlideshowImages();
 }
 
 // Load images for bottom slideshow (reverse order)
 async function loadBottomSlideshowImages() {
     try {
+        console.log('🔄 Loading bottom slideshow images...');
         const response = await fetch('/api/images');
         const data = await response.json();
         
@@ -661,6 +666,8 @@ async function loadBottomSlideshowImages() {
             console.log('⚠️ No images found for bottom slideshow');
             return;
         }
+        
+        console.log(`📸 Found ${data.images.length} images for bottom slideshow`);
         
         // Sort images in reverse order (last image first)
         const reverseSortedImages = data.images.sort((a, b) => {
@@ -747,10 +754,8 @@ document.addEventListener('DOMContentLoaded', function() {
     updateServiceTypeOptions();
     initImageCarousel();
     
-    // Add a small delay to ensure bottom slideshow initializes after main carousel
-    setTimeout(() => {
-        initBottomSlideshow();
-    }, 500);
+    // Initialize bottom slideshow immediately
+    initBottomSlideshow();
     
     // Add hover events to pause/resume carousel
     const carousel = document.getElementById('imageCarousel');
