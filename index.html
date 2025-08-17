@@ -216,87 +216,89 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
+        <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
             <h2>Get in Touch</h2>
-            <p class="section-subtitle">Ready to hang out? Just fill in the brief form below—I'll get back to you promptly. No pressure, no fuss. If you're curious about how it works or just want to say hi, that's totally fine too. Let's figure out something that feels right for you.</p>
-            
-            <div class="contact-note">
-                <p><strong>💡 Don't worry about getting everything perfect!</strong> This is just an initial conversation - nothing is set in stone. If you're not sure how this works or have questions, that's completely fine. Just reach out and we can figure it out together.</p>
-            </div>
+            <p class="section-subtitle">Ready to connect? Fill out the form below and I'll get back to you soon. If you have questions about companionship services or want to discuss what you have in mind, just reach out.</p>
             
             <form id="contactForm" class="contact-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="name">Full Name *</label>
-                        <input type="text" id="name" name="name" required>
+                <div class="form-section">
+                    <h3>Contact Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Full Name *</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="email">Email Address *</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="phone">Phone Number *</label>
-                        <input type="tel" id="phone" name="phone" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="location">Location in Nottingham *</label>
-                        <input type="text" id="location" name="location" placeholder="e.g., City Centre, Beeston, West Bridgford" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="serviceType">Service Type *</label>
-                        <select id="serviceType" name="serviceType" required>
-                            <option value="">Select a service</option>
-                            <option value="companionship">Companionship & Company (from £45/hour)</option>
-                            <option value="local-guidance">Local Area Guidance (from £45/hour)</option>
-                            <option value="social-support">Social Support (from £45/hour)</option>
-                            <option value="walking-outings">Walking & Outings (from £45/hour)</option>
-                            <option value="casual-meetups">Casual Meetups (from £45/hour)</option>
-                            <option value="other">Other (please specify)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="duration">Duration</label>
-                        <select id="duration" name="duration">
-                            <option value="">Select duration</option>
-                            <option value="2-3 hours">2-3 hours (£90-135)</option>
-                            <option value="Half day (3-4 hours)">Half day (3-4 hours) - £150</option>
-                            <option value="Full day (6-8 hours)">Full day (6-8 hours) - £250</option>
-                            <option value="Multiple days">Multiple days</option>
-                            <option value="Ongoing">Ongoing arrangement</option>
-                        </select>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location in Nottingham *</label>
+                            <input type="text" id="location" name="location" placeholder="e.g., City Centre, Beeston, West Bridgford" required>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="preferredDate">Preferred Date</label>
-                        <input type="date" id="preferredDate" name="preferredDate" min="">
+                <div class="form-section">
+                    <h3>Service Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="serviceType">Service Type *</label>
+                            <select id="serviceType" name="serviceType" required>
+                                <option value="">Select a service</option>
+                                <option value="companionship">Companionship & Company (from £45/hour)</option>
+                                <option value="local-guidance">Local Area Guidance (from £45/hour)</option>
+                                <option value="social-support">Social Support (from £45/hour)</option>
+                                <option value="walking-outings">Walking & Outings (from £45/hour)</option>
+                                <option value="casual-meetups">Casual Meetups (from £45/hour)</option>
+                                <option value="other">Other (please specify)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="duration">Duration</label>
+                            <select id="duration" name="duration">
+                                <option value="">Select duration</option>
+                                <option value="2-3 hours">2-3 hours (£90-135)</option>
+                                <option value="Half day (3-4 hours)">Half day (3-4 hours) - £150</option>
+                                <option value="Full day (6-8 hours)">Full day (6-8 hours) - £250</option>
+                                <option value="Multiple days">Multiple days</option>
+                                <option value="Ongoing">Ongoing arrangement</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="preferredTime">Preferred Time</label>
-                        <select id="preferredTime" name="preferredTime">
-                            <option value="">Select time</option>
-                            <option value="Morning (9AM-12PM)">Morning (9AM-12PM)</option>
-                            <option value="Afternoon (12PM-5PM)">Afternoon (12PM-5PM)</option>
-                            <option value="Evening (5PM-9PM)">Evening (5PM-9PM)</option>
-                            <option value="Flexible">Flexible</option>
-                        </select>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="preferredDate">Preferred Date</label>
+                            <input type="date" id="preferredDate" name="preferredDate" min="">
+                        </div>
+                        <div class="form-group">
+                            <label for="preferredTime">Preferred Time</label>
+                            <select id="preferredTime" name="preferredTime">
+                                <option value="">Select time</option>
+                                <option value="Morning (9AM-12PM)">Morning (9AM-12PM)</option>
+                                <option value="Afternoon (12PM-5PM)">Afternoon (12PM-5PM)</option>
+                                <option value="Evening (5PM-9PM)">Evening (5PM-9PM)</option>
+                                <option value="Flexible">Flexible</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 
-
-                
-                <div class="form-group full-width">
-                    <label for="message">Tell me about what you need *</label>
-                    <textarea id="message" name="message" rows="5" placeholder="Please describe what you're looking for, any specific tasks, and any other details that would help me understand your needs..." required></textarea>
+                <div class="form-section">
+                    <h3>What activity or occasion do you need a companion for? *</h3>
+                    <div class="form-group full-width">
+                        <textarea id="message" name="message" rows="5" placeholder="Please describe the event, activity, or situation and any other relevant details..." required></textarea>
+                    </div>
                 </div>
                 
                 <button type="submit" class="btn btn-primary">Send Message</button>
