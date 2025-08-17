@@ -725,6 +725,8 @@ html {
     box-shadow: 0 8px 30px rgba(0,0,0,0.15);
     background: #f8fafc;
     transition: height 0.3s ease; /* Smooth height transitions */
+    min-height: 300px;
+    max-height: 600px;
 }
 
 .carousel-image {
@@ -733,9 +735,10 @@ html {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain; /* Changed from 'cover' to 'contain' to prevent cropping */
     opacity: 0;
     transition: opacity 0.8s ease-in-out;
+    background: #f8fafc; /* Light background for images with transparency */
 }
 
 .carousel-image.active {
@@ -862,6 +865,8 @@ html {
     box-shadow: 0 8px 30px rgba(0,0,0,0.15);
     background: #f8fafc;
     margin: 3rem 0;
+    min-height: 250px;
+    max-height: 500px;
 }
 
 .bottom-slideshow-image {
@@ -870,9 +875,10 @@ html {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain; /* Changed from 'cover' to 'contain' to prevent cropping */
     opacity: 0;
     transition: opacity 1s ease-in-out;
+    background: #f8fafc; /* Light background for images with transparency */
 }
 
 .bottom-slideshow-image.active {
