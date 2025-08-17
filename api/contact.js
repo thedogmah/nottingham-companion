@@ -1,5 +1,6 @@
 const { connectToDatabase } = require('../db');
 const CompanionInquiry = require('../models/CompanionInquiry');
+const { sendCompanionInquiryEmail } = require('../utils/email');
 
 async function handleContactSubmission(req, res) {
   if (req.method !== 'POST') {
@@ -42,8 +43,8 @@ async function handleContactSubmission(req, res) {
       return res.status(400).json({ error: 'Invalid email format' });
     }
 
-    // Validate service type
-    const validServiceTypes = ['errands', 'local-guidance', 'life-admin', 'companionship', 'other'];
+    // Validate service type - updated to match current form options
+    const validServiceTypes = ['companionship', 'local-guidance', 'social-support', 'walking-outings', 'casual-meetups', 'other'];
     if (!validServiceTypes.includes(serviceType)) {
       return res.status(400).json({ error: 'Invalid service type' });
     }
@@ -72,6 +73,19 @@ async function handleContactSubmission(req, res) {
     const savedInquiry = await inquiry.save();
     
     console.log(`✅ New companion inquiry saved: ${savedInquiry._id} from ${email}`);
+
+    // Send email notification
+    try {
+      const emailResult = await sendCompanionInquiryEmail(savedInquiry);
+      if (emailResult.success) {
+        console.log(`✅ Email notification sent successfully for inquiry ${savedInquiry._id}`);
+      } else {
+        console.log(`⚠️ Email notification failed for inquiry ${savedInquiry._id}: ${emailResult.error}`);
+      }
+    } catch (emailError) {
+      console.log(`⚠️ Email notification error for inquiry ${savedInquiry._id}:`, emailError);
+      // Don't fail the whole request if email fails
+    }
 
     // Return success response
     res.status(201).json({
