@@ -108,7 +108,7 @@ p {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4rem;
-    align-items: start;
+    align-items: center;
     padding-bottom: 2rem;
 }
 
@@ -118,6 +118,7 @@ p {
     margin-bottom: 1rem;
     text-align: left;
     margin-bottom: 2rem;
+    margin-top: 2rem;
 }
 
 .hero-content h3 {
@@ -861,37 +862,7 @@ html {
     transform: scale(0.95);
 }
 
-/* Carousel Indicators */
-.carousel-indicators {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 8px;
-    z-index: 10;
-}
-
-.indicator {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-}
-
-.indicator.active {
-    background: white;
-    border-color: #3498db;
-    transform: scale(1.2);
-}
-
-.indicator:hover {
-    background: rgba(255, 255, 255, 0.8);
-    transform: scale(1.1);
-}
+/* Carousel Indicators - Removed to prevent text overlap */
 
 /* Fallback for when no images are loaded */
 .image-carousel:empty::before {
