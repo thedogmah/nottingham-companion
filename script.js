@@ -21,34 +21,73 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Contact form handling
+    // Contact Form Handling
     const contactForm = document.getElementById('contactForm');
-    
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Get form data
-            const formData = new FormData(this);
             const submitButton = this.querySelector('button[type="submit"]');
             const originalText = submitButton.textContent;
             
-            // Show loading state
+            // Disable button and show loading state
             submitButton.disabled = true;
             submitButton.textContent = 'Sending...';
             
-            // Simulate form submission (replace with actual form handling)
-            setTimeout(() => {
-                // Show success message
-                showNotification('Thank you! Your message has been sent. I\'ll get back to you within 24 hours.', 'success');
+            try {
+                // Get form data
+                const formData = new FormData(this);
+                const formObject = {};
                 
-                // Reset form
-                contactForm.reset();
+                // Convert FormData to object
+                formData.forEach((value, key) => {
+                    if (value.trim() !== '') {
+                        formObject[key] = value.trim();
+                    }
+                });
                 
-                // Reset button
+                // Add UTM parameters if available
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('utm_source')) formObject.utmSource = urlParams.get('utm_source');
+                if (urlParams.get('utm_medium')) formObject.utmMedium = urlParams.get('utm_medium');
+                if (urlParams.get('utm_campaign')) formObject.utmCampaign = urlParams.get('utm_campaign');
+                
+                // Submit to MongoDB API
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formObject)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Success
+                    showNotification(result.message, 'success');
+                    contactForm.reset();
+                    
+                    // Track successful submission (for analytics)
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'form_submit', {
+                            'event_category': 'engagement',
+                            'event_label': 'companion_service_inquiry'
+                        });
+                    }
+                } else {
+                    // Error from server
+                    showNotification(result.error || 'Failed to send message. Please try again.', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Form submission error:', error);
+                showNotification('Network error. Please check your connection and try again.', 'error');
+            } finally {
+                // Re-enable button
                 submitButton.disabled = false;
                 submitButton.textContent = originalText;
-            }, 1500);
+            }
         });
     }
 
@@ -312,5 +351,66 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.style.transform = '';
             }, 150);
         });
+    });
+});
+
+// Load pricing from admin panel
+function loadPricing() {
+    const pricing = JSON.parse(localStorage.getItem('companionPricing')) || {
+        hourlyRate: '£35',
+        halfDayRate: '£120',
+        fullDayRate: '£200',
+        overnightRate: '£250',
+        weeklyRate: '£1000',
+        travelFee: '£0.50'
+    };
+    
+    // Update pricing display
+    const hourlyPrice = document.getElementById('hourlyPrice');
+    const halfDayPrice = document.getElementById('halfDayPrice');
+    const fullDayPrice = document.getElementById('fullDayPrice');
+    
+    if (hourlyPrice) hourlyPrice.textContent = pricing.hourlyRate;
+    if (halfDayPrice) halfDayPrice.textContent = pricing.halfDayRate;
+    if (fullDayPrice) fullDayPrice.textContent = pricing.fullDayRate;
+}
+
+// Update form service type options based on pricing
+function updateServiceTypeOptions() {
+    const serviceTypeSelect = document.getElementById('serviceType');
+    if (!serviceTypeSelect) return;
+    
+    const pricing = JSON.parse(localStorage.getItem('companionPricing')) || {
+        hourlyRate: '£35',
+        halfDayRate: '£120',
+        fullDayRate: '£200'
+    };
+    
+    // Update the service type options to include pricing
+    const options = serviceTypeSelect.querySelectorAll('option');
+    options.forEach(option => {
+        if (option.value === 'errands') {
+            option.textContent = `Running Errands (from ${pricing.hourlyRate}/hour)`;
+        } else if (option.value === 'local-guidance') {
+            option.textContent = `Local Area Guidance (from ${pricing.hourlyRate}/hour)`;
+        } else if (option.value === 'life-admin') {
+            option.textContent = `Life Admin Help (from ${pricing.hourlyRate}/hour)`;
+        } else if (option.value === 'companionship') {
+            option.textContent = `General Companionship (from ${pricing.hourlyRate}/hour)`;
+        }
+    });
+}
+
+// Initialize pricing and form updates
+document.addEventListener('DOMContentLoaded', function() {
+    loadPricing();
+    updateServiceTypeOptions();
+    
+    // Listen for pricing changes from admin panel
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'companionPricing') {
+            loadPricing();
+            updateServiceTypeOptions();
+        }
     });
 });
