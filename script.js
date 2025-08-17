@@ -356,10 +356,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Load pricing from admin panel
 function loadPricing() {
+    // Clear old pricing cache if it exists with old values
+    const oldPricing = localStorage.getItem('companionPricing');
+    if (oldPricing) {
+        const parsed = JSON.parse(oldPricing);
+        if (parsed.hourlyRate === '£35' || parsed.halfDayRate === '£120' || parsed.fullDayRate === '£200') {
+            localStorage.removeItem('companionPricing');
+            console.log('🧹 Cleared old pricing cache');
+        }
+    }
+    
     const pricing = JSON.parse(localStorage.getItem('companionPricing')) || {
-        hourlyRate: '£35',
-        halfDayRate: '£120',
-        fullDayRate: '£200',
+        hourlyRate: '£45',
+        halfDayRate: '£150',
+        fullDayRate: '£250',
         weeklyRate: '£1000',
         travelFee: '£0.50'
     };
@@ -380,9 +390,9 @@ function updateServiceTypeOptions() {
     if (!serviceTypeSelect) return;
     
     const pricing = JSON.parse(localStorage.getItem('companionPricing')) || {
-        hourlyRate: '£35',
-        halfDayRate: '£120',
-        fullDayRate: '£200'
+        hourlyRate: '£45',
+        halfDayRate: '£150',
+        fullDayRate: '£250'
     };
     
     // Update the service type options to include pricing
@@ -745,6 +755,13 @@ function updateBottomSlideshow() {
         images[currentBottomImageIndex].classList.add('active');
         images[currentBottomImageIndex].style.zIndex = '1';
     }
+}
+
+// Function to manually clear pricing cache (can be called from browser console)
+function clearPricingCache() {
+    localStorage.removeItem('companionPricing');
+    console.log('🧹 Pricing cache cleared! Refreshing page...');
+    location.reload();
 }
 
 // Initialize carousel when DOM is loaded

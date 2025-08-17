@@ -336,11 +336,11 @@
                 </div>
                 <div class="input-group">
                     <label for="halfDayRate">Half Day Rate (3-4 hours):</label>
-                    <input type="text" id="halfDayRate" value="£120" placeholder="£120">
+                    <input type="text" id="halfDayRate" value="£150" placeholder="£150">
                 </div>
                 <div class="input-group">
                     <label for="fullDayRate">Full Day Rate (6-8 hours):</label>
-                    <input type="text" id="fullDayRate" value="£200" placeholder="£200">
+                    <input type="text" id="fullDayRate" value="£250" placeholder="£250">
                 </div>
                 <div class="input-group">
                     <label for="weeklyRate">Weekly Rate:</label>
@@ -376,8 +376,8 @@
         function loadPricing() {
             const pricing = JSON.parse(localStorage.getItem('companionPricing')) || {
                 hourlyRate: '£45',
-                halfDayRate: '£120',
-                fullDayRate: '£200',
+                halfDayRate: '£150',
+                fullDayRate: '£250',
                 weeklyRate: '£1000',
                 travelFee: '£0.50'
             };
