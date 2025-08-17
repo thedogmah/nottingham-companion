@@ -1,6 +1,6 @@
 const { connectToDatabase } = require('../db');
 const CompanionInquiry = require('../models/CompanionInquiry');
-const { sendCompanionInquiryEmail } = require('../utils/email');
+// const { sendCompanionInquiryEmail } = require('../utils/email'); // Commented out email functionality
 
 async function handleContactSubmission(req, res) {
   if (req.method !== 'POST') {
@@ -22,8 +22,6 @@ async function handleContactSubmission(req, res) {
       preferredTime,
       duration,
       location,
-      budget,
-      specialRequirements,
       utmSource,
       utmMedium,
       utmCampaign
@@ -60,8 +58,6 @@ async function handleContactSubmission(req, res) {
       preferredTime,
       duration,
       location: location.trim(),
-      budget,
-      specialRequirements,
       utmSource,
       utmMedium,
       utmCampaign,
@@ -74,18 +70,18 @@ async function handleContactSubmission(req, res) {
     
     console.log(`✅ New companion inquiry saved: ${savedInquiry._id} from ${email}`);
 
-    // Send email notification
-    try {
-      const emailResult = await sendCompanionInquiryEmail(savedInquiry);
-      if (emailResult.success) {
-        console.log(`✅ Email notification sent successfully for inquiry ${savedInquiry._id}`);
-      } else {
-        console.log(`⚠️ Email notification failed for inquiry ${savedInquiry._id}: ${emailResult.error}`);
-      }
-    } catch (emailError) {
-      console.log(`⚠️ Email notification error for inquiry ${savedInquiry._id}:`, emailError);
-      // Don't fail the whole request if email fails
-    }
+    // Email functionality commented out for now
+    // try {
+    //   const emailResult = await sendCompanionInquiryEmail(savedInquiry);
+    //   if (emailResult.success) {
+    //     console.log(`✅ Email notification sent successfully for inquiry ${savedInquiry._id}`);
+    //   } else {
+    //     console.log(`⚠️ Email notification failed for inquiry ${savedInquiry._id}: ${emailResult.error}`);
+    //   }
+    // } catch (emailError) {
+    //   console.log(`⚠️ Email notification error for inquiry ${savedInquiry._id}:`, emailError);
+    //   // Don't fail the whole request if email fails
+    // }
 
     // Return success response
     res.status(201).json({

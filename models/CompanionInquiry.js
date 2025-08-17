@@ -9,7 +9,7 @@ const companionInquirySchema = new mongoose.Schema({
   // Service Details
   serviceType: { 
     type: String, 
-    enum: ['errands', 'local-guidance', 'life-admin', 'companionship', 'other'],
+    enum: ['companionship', 'local-guidance', 'social-support', 'walking-outings', 'casual-meetups', 'other'],
     required: true 
   },
   
