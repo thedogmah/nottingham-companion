@@ -1,9 +1,0 @@
-<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
-  <rect width="400" height="300" fill="#fefefe" stroke="#d1d5db" stroke-width="2"/>
-  <text x="200" y="150" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" fill="#374151">
-    Professional Photo 3
-  </text>
-  <text x="200" y="170" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#6b7280">
-    Upload your image here
-  </text>
-</svg>
