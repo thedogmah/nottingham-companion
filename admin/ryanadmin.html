@@ -453,6 +453,8 @@
                     } else {
                         document.getElementById('inquiriesContainer').innerHTML = 
                             '<p>✅ No inquiries found yet. When someone submits the contact form, they will appear here.</p>';
+                        // Update stats with empty array
+                        updateStats([]);
                     }
                 } else {
                     document.getElementById('inquiriesContainer').innerHTML = 
@@ -560,16 +562,24 @@
         
         // Update statistics
         function updateStats(inquiries) {
-            const total = inquiries.length;
-            const today = new Date().toDateString();
-            const newToday = inquiries.filter(i => 
-                new Date(i.createdAt).toDateString() === today
-            ).length;
-            
-            document.getElementById('totalInquiries').textContent = total;
-            document.getElementById('newInquiries').textContent = newToday;
-            document.getElementById('conversionRate').textContent = 'N/A';
-            document.getElementById('avgResponseTime').textContent = 'N/A';
+            try {
+                const total = inquiries.length;
+                const today = new Date().toDateString();
+                const newToday = inquiries.filter(i => 
+                    new Date(i.createdAt).toDateString() === today
+                ).length;
+                
+                // Only update elements that exist
+                const totalElement = document.getElementById('totalInquiries');
+                const newElement = document.getElementById('newInquiries');
+                
+                if (totalElement) totalElement.textContent = total;
+                if (newElement) newElement.textContent = newToday;
+                
+                console.log('📊 Updated stats:', { total, newToday });
+            } catch (error) {
+                console.error('❌ Error updating stats:', error);
+            }
         }
         
         // Load user analytics from API
