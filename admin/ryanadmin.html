@@ -378,7 +378,10 @@
         
         <div class="admin-section">
             <h3>📋 Recent Inquiries</h3>
-            <button class="refresh-btn" onclick="loadInquiries()">🔄 Refresh Inquiries</button>
+            <div style="margin-bottom: 15px;">
+                <button class="refresh-btn" onclick="loadInquiries()">🔄 Refresh Inquiries</button>
+                <button class="refresh-btn" onclick="createTestInquiry()" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">🧪 Create Test Inquiry</button>
+            </div>
             <div id="inquiriesContainer">
                 <p>Loading inquiries...</p>
             </div>
@@ -436,19 +439,29 @@
         // Load inquiries from API
         async function loadInquiries() {
             try {
+                console.log('🔄 Loading inquiries...');
                 const response = await fetch('/api/admin/inquiries');
+                console.log('📡 Response status:', response.status);
+                
                 const data = await response.json();
+                console.log('📊 Response data:', data);
                 
                 if (response.ok) {
-                    displayInquiries(data.inquiries);
-                    updateStats(data.inquiries);
+                    if (data.inquiries && data.inquiries.length > 0) {
+                        displayInquiries(data.inquiries);
+                        updateStats(data.inquiries);
+                    } else {
+                        document.getElementById('inquiriesContainer').innerHTML = 
+                            '<p>✅ No inquiries found yet. When someone submits the contact form, they will appear here.</p>';
+                    }
                 } else {
                     document.getElementById('inquiriesContainer').innerHTML = 
-                        '<p>❌ Error loading inquiries: ' + data.error + '</p>';
+                        '<p>❌ Error loading inquiries: ' + (data.error || 'Unknown error') + '</p>';
                 }
             } catch (error) {
+                console.error('❌ Error loading inquiries:', error);
                 document.getElementById('inquiriesContainer').innerHTML = 
-                    '<p>❌ Network error loading inquiries</p>';
+                    '<p>❌ Network error loading inquiries: ' + error.message + '</p>';
             }
         }
         
@@ -651,6 +664,40 @@
             // Top browser
             const topBrowser = summary.topBrowsers && summary.topBrowsers[0];
             document.getElementById('topBrowser').textContent = topBrowser ? topBrowser._id : 'N/A';
+        }
+        
+        // Create test inquiry for debugging
+        async function createTestInquiry() {
+            try {
+                const testInquiry = {
+                    name: 'Test User',
+                    email: 'test@example.com',
+                    phone: '07123456789',
+                    serviceType: 'companionship',
+                    message: 'This is a test inquiry to verify the system is working.',
+                    location: 'Nottingham City Centre',
+                    status: 'new'
+                };
+                
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testInquiry)
+                });
+                
+                if (response.ok) {
+                    alert('✅ Test inquiry created successfully!');
+                    loadInquiries(); // Refresh the list
+                } else {
+                    const data = await response.json();
+                    alert('❌ Failed to create test inquiry: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error creating test inquiry:', error);
+                alert('❌ Error creating test inquiry: ' + error.message);
+            }
         }
         
         // Initialize admin panel

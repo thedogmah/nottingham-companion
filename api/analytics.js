@@ -183,27 +183,34 @@ function parseUserAgent(userAgent) {
 // Helper function to get geolocation from IP
 async function getGeolocation(ipAddress) {
   try {
-    // Skip local IPs
-    if (ipAddress === '127.0.0.1' || ipAddress === '::1' || ipAddress === 'unknown') {
-      return { country: 'Local', region: 'Local', city: 'Local', latitude: null, longitude: null };
+    // Clean IP address (remove IPv6 prefix)
+    let cleanIP = ipAddress;
+    if (ipAddress && ipAddress.startsWith('::ffff:')) {
+      cleanIP = ipAddress.replace('::ffff:', '');
+    }
+    
+    // Skip local/private IPs
+    if (cleanIP === '127.0.0.1' || cleanIP === '::1' || cleanIP === 'unknown' || 
+        cleanIP.startsWith('10.') || cleanIP.startsWith('192.168.') || cleanIP.startsWith('172.')) {
+      return { country: 'Local Network', region: 'Local', city: 'Local', latitude: null, longitude: null };
     }
     
     // Use ipapi.co for geolocation (free tier)
-    const response = await axios.get(`https://ipapi.co/${ipAddress}/json/`, {
+    const response = await axios.get(`https://ipapi.co/${cleanIP}/json/`, {
       timeout: 5000
     });
     
     if (response.data && response.data.country_name) {
       return {
-        country: response.data.country_name,
-        region: response.data.region,
-        city: response.data.city,
+        country: response.data.country_name || 'Unknown',
+        region: response.data.region || 'Unknown',
+        city: response.data.city || 'Unknown',
         latitude: response.data.latitude,
         longitude: response.data.longitude
       };
     }
   } catch (error) {
-    console.log('Geolocation lookup failed:', error.message);
+    console.log('Geolocation lookup failed for IP:', ipAddress, 'Error:', error.message);
   }
   
   // Fallback
