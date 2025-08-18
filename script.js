@@ -379,7 +379,7 @@ function loadPricing() {
     const halfDayPrice = document.getElementById('halfDayPrice');
     const fullDayPrice = document.getElementById('fullDayPrice');
     
-    if (hourlyPrice) hourlyPrice.textContent = pricing.hourlyRate;
+    if (hourlyPrice) hourlyPrice.textContent = `Min ${pricing.hourlyRate}/hour`;
     if (halfDayPrice) halfDayPrice.textContent = pricing.halfDayRate;
     if (fullDayPrice) fullDayPrice.textContent = pricing.fullDayRate;
 }
