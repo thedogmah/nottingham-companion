@@ -20,6 +20,7 @@ connectToDatabase()
 app.use('/api/contact', require('./api/contact'));
 app.use('/api/admin/inquiries', require('./api/admin/inquiries'));
 app.use('/api/images', require('./api/images'));
+app.use('/api/analytics', require('./api/analytics'));
 
 // Serve static files from the root directory
 app.use(express.static(__dirname));

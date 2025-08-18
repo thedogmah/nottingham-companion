@@ -764,6 +764,158 @@ function clearPricingCache() {
     location.reload();
 }
 
+// Cookie Consent Management
+function initCookieConsent() {
+    const cookieConsent = document.getElementById('cookieConsent');
+    const acceptBtn = document.getElementById('acceptCookies');
+    const declineBtn = document.getElementById('declineCookies');
+    
+    // Check if user has already made a choice
+    const cookieChoice = localStorage.getItem('cookieConsent');
+    
+    if (!cookieChoice) {
+        // Show cookie popup after 2 seconds
+        setTimeout(() => {
+            cookieConsent.style.display = 'block';
+        }, 2000);
+    }
+    
+    // Accept cookies
+    acceptBtn.addEventListener('click', function() {
+        localStorage.setItem('cookieConsent', 'accepted');
+        cookieConsent.style.display = 'none';
+        
+        // Track cookie acceptance
+        trackAnalytics({ cookiesAccepted: true });
+        
+        console.log('✅ Cookies accepted');
+    });
+    
+    // Decline cookies
+    declineBtn.addEventListener('click', function() {
+        localStorage.setItem('cookieConsent', 'declined');
+        cookieConsent.style.display = 'none';
+        
+        // Track cookie decline
+        trackAnalytics({ cookiesDeclined: true });
+        
+        console.log('❌ Cookies declined');
+    });
+}
+
+// Analytics Tracking
+let sessionId = null;
+let sessionStartTime = Date.now();
+let pageViewCount = 0;
+
+function initAnalytics() {
+    // Generate unique session ID
+    sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    // Track initial page view
+    trackPageView();
+    
+    // Track page visibility changes
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            // Page hidden - track session end
+            trackSessionEnd();
+        } else {
+            // Page visible again - track session resume
+            trackSessionResume();
+        }
+    });
+    
+    // Track before unload
+    window.addEventListener('beforeunload', function() {
+        trackSessionEnd();
+    });
+    
+    // Track scroll depth
+    let maxScrollDepth = 0;
+    window.addEventListener('scroll', function() {
+        const scrollDepth = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+        if (scrollDepth > maxScrollDepth) {
+            maxScrollDepth = scrollDepth;
+        }
+    });
+}
+
+function trackPageView() {
+    pageViewCount++;
+    
+    const analyticsData = {
+        sessionId: sessionId,
+        page: window.location.pathname,
+        referrer: document.referrer || '',
+        utmSource: getUrlParameter('utm_source'),
+        utmMedium: getUrlParameter('utm_medium'),
+        utmCampaign: getUrlParameter('utm_campaign'),
+        utmTerm: getUrlParameter('utm_term'),
+        utmContent: getUrlParameter('utm_content')
+    };
+    
+    // Send analytics data to server
+    fetch('/api/analytics/track', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(analyticsData)
+    }).catch(error => {
+        console.log('Analytics tracking failed:', error);
+    });
+}
+
+function trackAnalytics(additionalData = {}) {
+    const analyticsData = {
+        sessionId: sessionId,
+        page: window.location.pathname,
+        ...additionalData
+    };
+    
+    fetch('/api/analytics/track', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(analyticsData)
+    }).catch(error => {
+        console.log('Analytics tracking failed:', error);
+    });
+}
+
+function trackSessionEnd() {
+    if (sessionId) {
+        const timeOnSite = Math.round((Date.now() - sessionStartTime) / 1000);
+        
+        fetch('/api/analytics/track', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                sessionId: sessionId,
+                page: window.location.pathname,
+                sessionEnd: new Date().toISOString(),
+                timeOnSite: timeOnSite
+            })
+        }).catch(error => {
+            console.log('Session end tracking failed:', error);
+        });
+    }
+}
+
+function trackSessionResume() {
+    sessionStartTime = Date.now();
+}
+
+// Helper function to get URL parameters
+function getUrlParameter(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+}
+
 // Initialize carousel when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     loadPricing();
@@ -772,6 +924,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize bottom slideshow immediately
     initBottomSlideshow();
+    
+    // Initialize cookie consent and analytics
+    initCookieConsent();
+    initAnalytics();
     
     // Add hover events to pause/resume carousel
     const carousel = document.getElementById('imageCarousel');

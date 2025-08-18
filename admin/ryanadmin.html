@@ -317,12 +317,34 @@
                     <div class="stat-label">New Today</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" id="conversionRate">-</div>
-                    <div class="stat-label">Conversion Rate</div>
+                    <div class="stat-number" id="totalUsers">-</div>
+                    <div class="stat-label">Total Users</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" id="avgResponseTime">-</div>
-                    <div class="stat-label">Avg Response Time</div>
+                    <div class="stat-number" id="todayUsers">-</div>
+                    <div class="stat-label">Users Today</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-section">
+            <h3>👥 User Analytics Overview</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="cookiesAccepted">-</div>
+                    <div class="stat-label">Cookies Accepted</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="cookiesDeclined">-</div>
+                    <div class="stat-label">Cookies Declined</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="topCountry">-</div>
+                    <div class="stat-label">Top Country</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="topBrowser">-</div>
+                    <div class="stat-label">Top Browser</div>
                 </div>
             </div>
         </div>
@@ -359,6 +381,14 @@
             <button class="refresh-btn" onclick="loadInquiries()">🔄 Refresh Inquiries</button>
             <div id="inquiriesContainer">
                 <p>Loading inquiries...</p>
+            </div>
+        </div>
+        
+        <div class="admin-section">
+            <h3>👤 Recent User Analytics (Last 20)</h3>
+            <button class="refresh-btn" onclick="loadUserAnalytics()">🔄 Refresh Analytics</button>
+            <div id="analyticsContainer">
+                <p>Loading user analytics...</p>
             </div>
         </div>
         
@@ -529,11 +559,107 @@
             document.getElementById('avgResponseTime').textContent = 'N/A';
         }
         
+        // Load user analytics from API
+        async function loadUserAnalytics() {
+            try {
+                const response = await fetch('/api/analytics/recent');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayUserAnalytics(data.users);
+                } else {
+                    document.getElementById('analyticsContainer').innerHTML = 
+                        '<p>❌ Error loading analytics: ' + data.error + '</p>';
+                }
+            } catch (error) {
+                document.getElementById('analyticsContainer').innerHTML = 
+                    '<p>❌ Network error loading analytics</p>';
+            }
+        }
+        
+        // Load analytics summary
+        async function loadAnalyticsSummary() {
+            try {
+                const response = await fetch('/api/analytics/summary');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateAnalyticsStats(data.summary);
+                }
+            } catch (error) {
+                console.log('Failed to load analytics summary:', error);
+            }
+        }
+        
+        // Display user analytics in table
+        function displayUserAnalytics(users) {
+            if (!users || users.length === 0) {
+                document.getElementById('analyticsContainer').innerHTML = 
+                    '<p>No user analytics data found.</p>';
+                return;
+            }
+            
+            const table = `
+                <table class="inquiries-table">
+                    <thead>
+                        <tr>
+                            <th>Last Visit</th>
+                            <th>IP Address</th>
+                            <th>Location</th>
+                            <th>Browser</th>
+                            <th>Device</th>
+                            <th>Page Views</th>
+                            <th>Cookies</th>
+                            <th>Entry Page</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${users.map(user => `
+                            <tr>
+                                <td>${new Date(user.lastVisit).toLocaleString()}</td>
+                                <td>${user.ipAddress}</td>
+                                <td>${user.city || 'Unknown'}, ${user.country || 'Unknown'}</td>
+                                <td>${user.browser || 'Unknown'} ${user.browserVersion || ''}</td>
+                                <td>${user.deviceType || 'Unknown'}</td>
+                                <td>${user.pageViews || 1}</td>
+                                <td>
+                                    ${user.cookiesAccepted ? '<span class="status-badge status-completed">Accepted</span>' : 
+                                      user.cookiesDeclined ? '<span class="status-badge status-cancelled">Declined</span>' : 
+                                      '<span class="status-badge status-new">Pending</span>'}
+                                </td>
+                                <td>${user.entryPage || '/'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            document.getElementById('analyticsContainer').innerHTML = table;
+        }
+        
+        // Update analytics statistics
+        function updateAnalyticsStats(summary) {
+            document.getElementById('totalUsers').textContent = summary.totalUsers || 0;
+            document.getElementById('todayUsers').textContent = summary.todayUsers || 0;
+            document.getElementById('cookiesAccepted').textContent = summary.cookiesAccepted || 0;
+            document.getElementById('cookiesDeclined').textContent = summary.cookiesDeclined || 0;
+            
+            // Top country
+            const topCountry = summary.topCountries && summary.topCountries[0];
+            document.getElementById('topCountry').textContent = topCountry ? topCountry._id : 'N/A';
+            
+            // Top browser
+            const topBrowser = summary.topBrowsers && summary.topBrowsers[0];
+            document.getElementById('topBrowser').textContent = topBrowser ? topBrowser._id : 'N/A';
+        }
+        
         // Initialize admin panel
         document.addEventListener('DOMContentLoaded', function() {
             loadPricing();
             loadInquiries();
             loadImages();
+            loadUserAnalytics();
+            loadAnalyticsSummary();
         });
     </script>
 </body>
